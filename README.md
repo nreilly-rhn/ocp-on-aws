@@ -11,7 +11,7 @@ export TF_VAR_base_domain=example.com
 export TF_VAR_infra_name=ocp
 export TF_VAR_vpc_cidr=10.0.0.16
 ```
-## Or create terraform..tfvars.json
+## Or create terraform.tfvars.json
 #### You may need to get creative with escaping the quotes in the pull secret like below
 #### I haven't tested this method
 #### It's probably preferable to export the vars as shown above
