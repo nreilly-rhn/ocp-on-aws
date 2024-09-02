@@ -1,5 +1,4 @@
 ---
----
 - name: Apache server installed
   hosts: web
 
