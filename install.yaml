@@ -1,74 +1,22 @@
 ---
 - name: Apache server installed
-  hosts: web
+  hosts: localhost
 
   tasks:
-  - name: latest Apache version installed
-    ansible.builtin.yum:
-      name: httpd
-      state: latest
-
-  - name: latest firewalld version installed
-    ansible.builtin.yum:
-      name: firewalld
-      state: latest
-
-  - name: firewalld enabled and running
-    ansible.builtin.service:
-      name: firewalld
-      enabled: true
-      state: started
-
-  - name: firewalld permits http service
-    ansible.builtin.firewalld:
-      service: http
-      permanent: true
-      state: enabled
-      immediate: yes
-
-  - name: Apache enabled and running
-    ansible.builtin.service:
-      name: httpd
-      enabled: true
-      state: started
-
-# - name: Create s3 bucket to store state
-#   environment:
-#     AWS_ACCESS_KEY_ID: "{{ aws_access_key_id }}"
-#     AWS_SECRET_ACCESS_KEY: "{{ aws_secret_access_key }}"
-#     AWS_DEFAULT_REGION: "{{ aws_region }}"
-#   amazon.aws.s3_bucket:
-#     name: "{{ cluster_name }}-terraform"
-#     state: present
-
-# - name: Copy terraform module to work_dir
-#   ansible.builtin.copy:
-#     src: files/
-#     dest: "{{ work_dir }}/{{ cluster_name }}/{{ role_name }}/"
-#     mode: "0664"
-# 
-# - name: Copy terraform files to work_dir
-#   ansible.builtin.template:
-#     src: "{{ item }}"
-#     dest: "{{ work_dir }}/{{ cluster_name }}/{{ role_name }}/{{ item }}"
-#     mode: "0664"
-#   with_items:
-#     - terraform.tfvars.json
-
-- name: Network resources {{ 'Create' if network_tf_state == 'present' else 'Delete' }}
-  environment:
-    TF_BACKEND_BUCKET: "{{ cluster_name }}-terraform"
-    TF_VAR_aws_region: "{{ aws_region }}"
-    TF_VAR_aws_access_key_id: "{{ TF_VAR_aws_access_key_id }}"
-    TF_VAR_aws_secret_access_key: "{{ aws_secret_access_key }}"
-    TF_VAR_ssh_pubkey: "{{ ssh_pubkey }}"
-    TF_VAR_pull_secret: "{{ pull_secret }}"
-    TF_VAR_base_domain: "{{ base_domain }}"
-    TF_VAR_infra_name: "{{ infra_name }}"
-    TF_VAR_vpc_cidr: "{{ vpc_cidr }}"
-  cloud.terraform.terraform:
-    project_path: "{{ work_dir }}/{{ cluster_name }}/{{ role_name }}/"
-    force_init: true
-    provider_upgrade: true
-    state: "{{ network_tf_state }}"
-  register: network_output
+  - name: Network resources {{ 'Create' if network_tf_state == 'present' else 'Delete' }}
+    environment:
+      TF_BACKEND_BUCKET: "{{ cluster_name }}-terraform"
+      TF_VAR_aws_region: "{{ aws_region }}"
+      TF_VAR_aws_access_key_id: "{{ TF_VAR_aws_access_key_id }}"
+      TF_VAR_aws_secret_access_key: "{{ aws_secret_access_key }}"
+      TF_VAR_ssh_pubkey: "{{ ssh_pubkey }}"
+      TF_VAR_pull_secret: "{{ pull_secret }}"
+      TF_VAR_base_domain: "{{ base_domain }}"
+      TF_VAR_infra_name: "{{ infra_name }}"
+      TF_VAR_vpc_cidr: "{{ vpc_cidr }}"
+    cloud.terraform.terraform:
+      project_path: "{{ work_dir }}/{{ cluster_name }}/{{ role_name }}/"
+      force_init: true
+      provider_upgrade: true
+      state: "{{ network_tf_state }}"
+    register: network_output
